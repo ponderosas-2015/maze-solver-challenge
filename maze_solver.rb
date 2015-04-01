@@ -31,8 +31,8 @@ class MazeSolver
       print_maze
     end
     conclusion = solved?(current) ? "SOLVABLE!" : "UNSOLVABLE"
-    puts conclusion
     print_maze
+    puts conclusion
   end
 
   def solved?(current)
@@ -40,9 +40,13 @@ class MazeSolver
   end
 
   def print_maze
-    puts "\n"
+    clear_screen
     puts @maze.join("\n")
     sleep(0.1)
+  end
+
+  def clear_screen
+    print "\e[2J\e[f"
   end
 
   def find(character)
