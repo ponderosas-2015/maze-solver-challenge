@@ -1,4 +1,5 @@
 require_relative 'queue'
+require_relative 'stack'
 
 class MazeSolver
   START_CHAR = "o"
@@ -9,6 +10,7 @@ class MazeSolver
 
   def initialize
     @maze = nil # ["o#........", ".#####.##.", ".......##.", "######.#*.", ".......###"]
+    @store = Queue.new
   end
 
   def read(text_file)
@@ -16,17 +18,23 @@ class MazeSolver
     @maze.map!(&:chomp)
   end
 
+  def add_to_store(cell)
+    @store.is_a?(Queue) ? @store.enqueue(cell) : @store.push(cell)
+  end
+
+  def get_next_in_store
+    @store.is_a?(Queue) ? @store.dequeue : @store.pop
+  end
+
   def solve!
-    queue = Queue.new
     current = find(START_CHAR)
-    queue.enqueue(current)
-    until (solved?(current) || queue.empty?)
-      current = queue.dequeue
+    add_to_store(current)
+    until (solved?(current) || @store.empty?)
+      current = get_next_in_store
       mark_cell(current)
-      # enqueue or stack next edges
+      # enstore or stack next edges
       find_edges(current).each do |cell|
-        puts "#{cell} has been added to the queue"
-        queue.enqueue(cell)
+        add_to_store(cell)
       end
       print_maze
     end
@@ -79,7 +87,7 @@ class MazeSolver
   def possible_edges(cell)
     row = cell.first
     col = cell.last
-    [[row - 1, col], [row + 1, col], [row, col - 1], [row, col + 1]]
+    [[row, col - 1], [row, col + 1], [row + 1, col], [row - 1, col]]
   end
 
 end
