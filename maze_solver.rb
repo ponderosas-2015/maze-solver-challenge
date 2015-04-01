@@ -29,8 +29,7 @@ class MazeSolver
       end
       @maze.print_maze
     end
-    conclusion = solved?(current) ? "SOLVABLE!" : "UNSOLVABLE"
-    puts conclusion
+    solved?(current)
   end
 
   def solved?(current)

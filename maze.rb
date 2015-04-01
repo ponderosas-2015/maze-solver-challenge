@@ -19,7 +19,7 @@ class Maze
     print "\e[2J\e[f"
   end
 
-  def mark_cell(cell)
+  def mark_cell(cell) #TODO make bang
     @maze[cell.first][cell.last] = VISITED_CELL if @maze[cell.first][cell.last] == AVAILABLE_CELL
   end
 
@@ -49,7 +49,8 @@ class Maze
   end
 
   def available?(cell)
-    @maze[cell.first][cell.last] == AVAILABLE_CELL || @maze[cell.first][cell.last] == END_CELL
+    @maze[cell.first][cell.last] == AVAILABLE_CELL ||
+        @maze[cell.first][cell.last] == END_CELL
   end
 
   private

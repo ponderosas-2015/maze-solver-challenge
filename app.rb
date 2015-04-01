@@ -7,4 +7,5 @@ require_relative 'stack'
 maze = Maze.new("map.1.txt")
 strategy = Stack
 maze_solver = MazeSolver.new(maze, strategy)
-maze_solver.solve!
+solvable = maze_solver.solve! ? "SOLVABLE!" : "UNSOLVABLE"
+puts solvable
