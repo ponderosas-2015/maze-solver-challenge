@@ -9,11 +9,6 @@ class Maze
     @maze = read(text_file)
   end
 
-  def read(text_file)
-    @maze = File.readlines(text_file)
-    @maze.map!(&:chomp)
-  end
-
   def print_maze
     clear_screen
     puts @maze.join("\n")
@@ -55,5 +50,12 @@ class Maze
 
   def available?(cell)
     @maze[cell.first][cell.last] == AVAILABLE_CELL || @maze[cell.first][cell.last] == END_CELL
+  end
+
+  private
+
+  def read(text_file)
+    @maze = File.readlines(text_file)
+    @maze.map!(&:chomp)
   end
 end
