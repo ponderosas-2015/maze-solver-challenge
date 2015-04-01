@@ -1,33 +1,49 @@
 require_relative 'maze_solver'
+require_relative 'maze'
 
 describe MazeSolver do
   let(:text_file) {'map.1.txt'}
-  let(:maze_solver) {MazeSolver.new}
-  let(:ready_solver) do
-    maze_solver.read(text_file)
-    maze_solver
-  end
+  let(:maze) {Maze.new(text_file)}
+  let(:maze_solver) {MazeSolver.new(maze)}
 
 	describe '::new' do
 		it 'returns a new instance of MazeSolver' do
-			expect(MazeSolver.new).to be_an_instance_of MazeSolver
+			expect(MazeSolver.new(maze)).to be_an_instance_of MazeSolver
 		end
 	end
 
-  describe 'read(text_file)' do
-    it 'reads a text file into a data structure' do
-      maze_solver.read(text_file)
-      expect(maze_solver.instance_variable_get(:@maze)).not_to be nil
+  describe '#add_to_store(cell)' do
+    it 'should add a cell to the store' do
+      cell = [1,1]
+      expect(maze_solver.instance_variable_get(:@store)).to receive(:push).with(cell)
+      maze_solver.add_to_store(cell)
     end
   end
 
-  describe 'find(char)' do
-    it 'finds the start index' do
-      expect(ready_solver.find('o')).to eq [0,0]
-    end
-    it 'finds the end index' do
-      expect(ready_solver.find('*')).to eq [3,8]
+  describe '#get_next_in_store' do
+    it 'should add a cell to the store' do
+      cell = [1,1]
+      maze_solver.add_to_store(cell)
+      expect(maze_solver.get_next_in_store).to eq cell
     end
   end
 
+  describe '#solved?(current)' do
+    it 'should return true if the current cell is the end' do
+      expect(maze_solver.solved?(maze.end)).to be true
+    end
+    it 'should return false if the current cell is the end' do
+      expect(maze_solver.solved?(maze.start)).to be false
+    end
+  end
+
+  describe '#find_edges?(cell)' do
+    it 'should return available cells when there is only one' do
+      expect(maze_solver.find_edges(maze.start)).to eq [[1,0]]
+    end
+    it 'should return available cells when there are multiple' do
+      expect(maze_solver.find_edges([3,0])).to include [2,0]
+      expect(maze_solver.find_edges([3,0])).to include [4,0]
+    end
+  end
 end

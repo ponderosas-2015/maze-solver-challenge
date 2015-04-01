@@ -5,9 +5,9 @@ require_relative 'stack'
 class MazeSolver
   STRATEGY = Stack
 
-  def initialize(maze)
+  def initialize(maze, strategy=STRATEGY)
     @maze = maze # ["o#........", ".#####.##.", ".......##.", "######.#*.", ".......###"]
-    @store = STRATEGY.new
+    @store = strategy.new
   end
 
   def add_to_store(cell)
@@ -49,8 +49,3 @@ class MazeSolver
     [[row, col - 1], [row, col + 1], [row + 1, col], [row - 1, col]]
   end
 end
-
-# DRIVER CODE
-maze = Maze.new("map.1.txt")
-maze_solver = MazeSolver.new(maze)
-maze_solver.solve!
