@@ -1,16 +1,16 @@
 class MazeSolver
+  START = "o"
+  WALL = "#"
+  OPEN = "."
+  VISITED = "x"
+  TARGET = "*"
+  CLEAR_SCREEN = "\e[2J\e[f"
+
   attr_reader :map, :width, :height
   def initialize(filename)
     @map = File.read(filename)
     @width = @map.index("\n") + 1
-    # @height = @map.scan(/\n/).length
-  end
-
-# do i need this at all?
-  def row_column(index)
-    row = index/width
-    column = index%width
-    [row, column]
+    @start = @map.index(START)
   end
 
   def on_map?(index)
@@ -19,7 +19,7 @@ class MazeSolver
 
   def open_space?(index)
     # might be able to get rid of the check for the * and just check for .
-    @map[index] == "." || @map[index] == "*"
+    @map[index] == OPEN || @map[index] == TARGET
   end
 
   def valid?(index)
@@ -35,25 +35,65 @@ class MazeSolver
   end
 
   def valid_neighbor_indices(index)
+    # neighbor_indices(index).select(&method(:valid?))
     neighbor_indices(index).select {|n_index| valid?(n_index)}
   end
 
-  def walk(index, visited = [])
+  def print_map(current_index)
+    print CLEAR_SCREEN
+    @map[current_index] = VISITED
+    puts @map
+    sleep(0.1)
+  end
+
+  def dfs(index, visited = [])
+    return true if @map[index] == TARGET
+    print_map(index)
+    sleep(0.1)
     neighbors = valid_neighbor_indices(index)
-    return "solvable" if @map[index] == "*"
     visited << index
     non_visited_neighbors = neighbors - visited
     non_visited_neighbors.each do |neighbor_index|
-      return "solvable" if walk(neighbor_index, visited) == "solvable"
+      return true if dfs(neighbor_index, visited)
     end
+    false
+  end
+
+  def bfs
+    queue = []
+    queue.push(@start)
+    while !queue.empty?
+      current_index = queue.shift
+      return true if @map[current_index] == TARGET
+      print_map(current_index)
+      neighbors = valid_neighbor_indices(current_index)
+      queue.concat(neighbors)
+    end
+    false
+  end
+
+  def dfs_iterative
+    stack = []
+    stack.push(@start)
+    while !stack.empty?
+      current_index = stack.pop
+      return true if @map[current_index] == TARGET
+      print_map(current_index)
+      neighbors = valid_neighbor_indices(current_index)
+      stack.concat(neighbors)
+    end
+    false
   end
 
   def run!
-    if walk(0) == "solvable"
-      return "solvable"
+    # puts "please enter the strategy you would like to use (dfs or bfs):"
+    # response = gets.chomp
+    strategy  = ARGV[0]
+    if strategy == "dfs"
+      dfs_iterative ? "solvable" : "not solvable"
+      # dfs(@start) ? "solvable" : "not solvable"
     else
-      return "not solvable"
+      bfs ? "solvable" : "not solvable"
     end
   end
-
 end

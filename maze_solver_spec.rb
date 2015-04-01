@@ -27,7 +27,7 @@ m
     end
   end
 
-  describe "::valid?(index)" do
+  describe ".valid?(index)" do
     context "there is a . or * there" do
       it "returns true" do
         expect(solver.valid?(2)).to be true
@@ -58,10 +58,6 @@ m
       it "returns the correct neighbor indices" do
         expect(solver.valid_neighbor_indices(17)).to eq [6, 28]
       end
-    end
-  end
-  describe "::new(filename)" do
-    it "" do
     end
   end
 end
