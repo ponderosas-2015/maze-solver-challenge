@@ -1,6 +1,6 @@
 require_relative 'maze_solver'
 
-describe MazeSolver do 
+describe MazeSolver do
   let(:text_file) {'map.1.txt'}
   let(:maze_solver) {MazeSolver.new}
   let(:ready_solver) do
@@ -21,7 +21,7 @@ describe MazeSolver do
     end
   end
 
-  describe 'find(character)' do
+  describe 'find(char)' do
     it 'finds the start index' do
       expect(ready_solver.find('o')).to eq [0,0]
     end
