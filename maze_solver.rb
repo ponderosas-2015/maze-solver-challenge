@@ -19,8 +19,7 @@ class MazeSolver
   end
 
   def open_space?(index)
-    # might be able to get rid of the check for the * and just check for .
-    @map[index] == OPEN || @map[index] == TARGET
+    @map[index] == OPEN || @map[index] == TARGET || @map[index] == START
   end
 
   def valid?(index)
@@ -35,11 +34,6 @@ class MazeSolver
     [left_index, top_index, right_index, bottom_index]
   end
 
-  def valid_neighbor_indices(index)
-    # neighbor_indices(index).select(&method(:valid?))
-    neighbors(index).select {|n_index| valid?(n_index)}
-  end
-
   def print_map(current_index, steps)
     print CLEAR_SCREEN
     puts @map
@@ -48,21 +42,22 @@ class MazeSolver
   end
 
   def dfs_bfs
+    steps = 0
     queue_stack = []
     queue_stack.push(@start)
-    steps = 0
     while !queue_stack.empty?
       if @strategy == "bfs"
         current_index = queue_stack.shift
       else
         current_index = queue_stack.pop
       end
-      steps += 1
-      return true if @map[current_index] == TARGET
-      @map[current_index] = VISITED
-      print_map(current_index, steps)
-      neighbors = valid_neighbor_indices(current_index)
-      queue_stack.concat(neighbors)
+      if valid?(current_index)
+        return true if @map[current_index] == TARGET
+        @map[current_index] = VISITED
+        print_map(current_index, steps)
+        steps += 1
+        queue_stack.concat(neighbors(current_index))
+      end
     end
     false
   end
