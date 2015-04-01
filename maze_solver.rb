@@ -23,11 +23,13 @@ class MazeSolver
     add_to_store(current)
     until (solved?(current) || @store.empty?)
       current = get_next_in_store
-      @maze.mark_cell(current)
-      find_edges(current).each do |cell|
-        add_to_store(cell)
+      if @maze.available?(current) || @maze.start == current
+        find_edges(current).each do |cell|
+          add_to_store(cell)
+        end
+        @maze.mark_cell(current)
+        @maze.print_maze
       end
-      @maze.print_maze
     end
     solved?(current)
   end
