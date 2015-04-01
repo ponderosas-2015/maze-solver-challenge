@@ -40,40 +40,29 @@ class MazeSolver
     neighbors(index).select {|n_index| valid?(n_index)}
   end
 
-  def print_map(current_index)
+  def print_map(current_index, steps)
     print CLEAR_SCREEN
     puts @map
+    puts "Steps: #{steps}"
     sleep(0.1)
   end
 
   def dfs_bfs
     queue_stack = []
     queue_stack.push(@start)
+    steps = 0
     while !queue_stack.empty?
       if @strategy == "bfs"
         current_index = queue_stack.shift
       else
         current_index = queue_stack.pop
       end
+      steps += 1
       return true if @map[current_index] == TARGET
       @map[current_index] = VISITED
-      print_map(current_index)
+      print_map(current_index, steps)
       neighbors = valid_neighbor_indices(current_index)
       queue_stack.concat(neighbors)
-    end
-    false
-  end
-
-  def dfs_iterative
-    stack = []
-    stack.push(@start)
-    while !stack.empty?
-      current_index = stack.pop
-      return true if @map[current_index] == TARGET
-      @map[current_index] = VISITED
-      print_map(current_index)
-      neighbors = valid_neighbor_indices(current_index)
-      stack.concat(neighbors)
     end
     false
   end
