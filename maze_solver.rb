@@ -7,10 +7,11 @@ class MazeSolver
   CLEAR_SCREEN = "\e[2J\e[f"
 
   attr_reader :map, :width, :height
-  def initialize(filename)
+  def initialize(filename, strategy)
     @map = File.read(filename)
     @width = @map.index("\n") + 1
     @start = @map.index(START)
+    @strategy = strategy
   end
 
   def on_map?(index)
@@ -26,7 +27,7 @@ class MazeSolver
     return on_map?(index) && open_space?(index)
   end
 
-  def neighbor_indices(index)
+  def neighbors(index)
     left_index = index - 1
     top_index = index - @width
     right_index = index + 1
@@ -36,38 +37,29 @@ class MazeSolver
 
   def valid_neighbor_indices(index)
     # neighbor_indices(index).select(&method(:valid?))
-    neighbor_indices(index).select {|n_index| valid?(n_index)}
+    neighbors(index).select {|n_index| valid?(n_index)}
   end
 
   def print_map(current_index)
     print CLEAR_SCREEN
-    @map[current_index] = VISITED
     puts @map
     sleep(0.1)
   end
 
-  def dfs(index, visited = [])
-    return true if @map[index] == TARGET
-    print_map(index)
-    sleep(0.1)
-    neighbors = valid_neighbor_indices(index)
-    visited << index
-    non_visited_neighbors = neighbors - visited
-    non_visited_neighbors.each do |neighbor_index|
-      return true if dfs(neighbor_index, visited)
-    end
-    false
-  end
-
-  def bfs
-    queue = []
-    queue.push(@start)
-    while !queue.empty?
-      current_index = queue.shift
+  def dfs_bfs
+    queue_stack = []
+    queue_stack.push(@start)
+    while !queue_stack.empty?
+      if @strategy == "bfs"
+        current_index = queue_stack.shift
+      else
+        current_index = queue_stack.pop
+      end
       return true if @map[current_index] == TARGET
+      @map[current_index] = VISITED
       print_map(current_index)
       neighbors = valid_neighbor_indices(current_index)
-      queue.concat(neighbors)
+      queue_stack.concat(neighbors)
     end
     false
   end
@@ -78,6 +70,7 @@ class MazeSolver
     while !stack.empty?
       current_index = stack.pop
       return true if @map[current_index] == TARGET
+      @map[current_index] = VISITED
       print_map(current_index)
       neighbors = valid_neighbor_indices(current_index)
       stack.concat(neighbors)
@@ -86,14 +79,6 @@ class MazeSolver
   end
 
   def run!
-    # puts "please enter the strategy you would like to use (dfs or bfs):"
-    # response = gets.chomp
-    strategy  = ARGV[0]
-    if strategy == "dfs"
-      dfs_iterative ? "solvable" : "not solvable"
-      # dfs(@start) ? "solvable" : "not solvable"
-    else
-      bfs ? "solvable" : "not solvable"
-    end
+    dfs_bfs ? "solvable" : "not solvable"
   end
 end
